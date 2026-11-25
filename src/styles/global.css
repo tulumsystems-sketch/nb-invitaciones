@@ -1,0 +1,122 @@
+@import "tailwindcss";
+
+@keyframes nbFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes nbSoftScale {
+  from {
+    opacity: 0;
+    transform: scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@layer utilities {
+  .animate-nb-fade-up {
+    animation: nbFadeUp 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .animate-nb-scale-in {
+    animation: nbSoftScale 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .nb-card-hover {
+    transition:
+      transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 220ms cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 220ms ease;
+  }
+
+  .nb-card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px -14px rgba(28, 25, 23, 0.22);
+  }
+
+  .nb-overlay-offset {
+    margin-top: -4rem;
+  }
+
+  .nb-reveal {
+    opacity: 1;
+    transform: translateY(0);
+    transition:
+      opacity 500ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 500ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .nb-reveal:not(.is-visible) {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  .nb-delay-1 {
+    transition-delay: 70ms;
+  }
+
+  .nb-delay-2 {
+    transition-delay: 150ms;
+  }
+
+  .nb-delay-3 {
+    transition-delay: 230ms;
+  }
+
+  .nb-dark-card {
+    position: relative;
+    overflow: hidden;
+    transition:
+      transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 260ms ease,
+      background-color 260ms ease,
+      box-shadow 260ms ease;
+  }
+
+  .nb-dark-card::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(251, 191, 36, 0.55), transparent);
+    opacity: 0;
+    transition: opacity 260ms ease;
+  }
+
+  .nb-dark-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(251, 191, 36, 0.35);
+    background-color: rgba(28, 25, 23, 0.95);
+    box-shadow: 0 20px 40px -18px rgba(0, 0, 0, 0.75);
+  }
+
+  .nb-dark-card:hover::before {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-nb-fade-up,
+  .animate-nb-scale-in,
+  .nb-card-hover,
+  .nb-card-hover:hover,
+  .nb-reveal,
+  .nb-reveal:not(.is-visible),
+  .nb-dark-card,
+  .nb-dark-card:hover,
+  .nb-dark-card::before {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}

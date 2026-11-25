@@ -1,0 +1,173 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const { supabase, user, isAnonymous } = Astro.locals;
+
+if (!user) {
+  return Astro.redirect('/login');
+}
+
+const { data: invitations, error } = await supabase
+  .from('invitations')
+  .select('id, slug, status, event_type, event_type_other, wizard_step, event_date, updated_at, data, style')
+  .eq('owner_id', user.id)
+  .order('updated_at', { ascending: false });
+---
+
+<BaseLayout title="Mis invitaciones — NB Invitaciones">
+  <section class="mx-auto max-w-6xl px-4 py-10 sm:px-6">
+    <div class="animate-nb-fade-up flex flex-col justify-between gap-4 rounded-3xl border border-stone-200/90 bg-white p-6 shadow-2xs sm:flex-row sm:items-center sm:p-7">
+      <div>
+        <span class="inline-block rounded-full bg-stone-100 px-3 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-stone-600">
+          {isAnonymous ? 'Sesión de invitado' : 'Cuenta registrada'}
+        </span>
+        <h1 class="mt-2 text-2xl font-bold tracking-tight text-stone-900 sm:text-3xl">
+          Mis invitaciones
+        </h1>
+        <p class="mt-1 text-xs text-stone-500">
+          Administrá tus borradores, retomá la edición o eliminá los que no necesites.
+        </p>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-2.5">
+        {isAnonymous && (
+          <a
+            href="/registro?next=/mis-invitaciones"
+            class="rounded-xl bg-emerald-700 px-4 py-2.5 text-xs font-semibold text-white shadow-2xs transition hover:bg-emerald-600"
+          >
+            Guardar con cuenta
+          </a>
+        )}
+        <a
+          href="/crear"
+          class="rounded-xl bg-stone-900 px-4 py-2.5 text-xs font-semibold text-white shadow-2xs transition hover:bg-stone-800"
+        >
+          + Nueva invitación
+        </a>
+      </div>
+    </div>
+
+    {error && (
+      <div class="mt-6 rounded-2xl border border-red-200 bg-red-50 p-4 text-xs font-medium text-red-700">
+        No se pudieron cargar tus invitaciones: {error.message}
+      </div>
+    )}
+
+    {!error && (!invitations || invitations.length === 0) ? (
+      <div class="animate-nb-fade-up mt-8 rounded-3xl border border-stone-200 bg-white p-10 text-center shadow-2xs">
+        <p class="text-sm font-semibold text-stone-800">
+          Todavía no tenés borradores guardados en esta sesión.
+        </p>
+        <p class="mt-1 text-xs text-stone-500">
+          Creá uno desde el asistente para verlo acá y poder editarlo cuando quieras.
+        </p>
+        <a
+          href="/crear"
+          class="mt-5 inline-block rounded-xl bg-stone-900 px-5 py-2.5 text-xs font-semibold text-white transition hover:bg-stone-800"
+        >
+          Ir al asistente
+        </a>
+      </div>
+    ) : (
+      <div id="invitations-grid" class="animate-nb-fade-up mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {invitations?.map((inv) => {
+          const invData =
+            inv.data && typeof inv.data === 'object' ? (inv.data as Record<string, unknown>) : {};
+          const title =
+            typeof invData.title === 'string' && invData.title.trim()
+              ? invData.title.trim()
+              : 'Sin título';
+          const eventLabel =
+            inv.event_type === 'otro' && inv.event_type_other
+              ? inv.event_type_other
+              : (inv.event_type || 'Evento').replace('_', ' ');
+
+          return (
+            <article
+              data-invitation-card={inv.id}
+              class="nb-card-hover flex flex-col justify-between rounded-2xl border border-stone-200/90 bg-white p-5 shadow-2xs"
+            >
+              <div>
+                <div class="flex items-center justify-between gap-2">
+                  <span class="rounded-full bg-amber-100 px-2.5 py-0.5 text-[11px] font-semibold text-amber-900">
+                    {inv.status === 'draft' ? 'Borrador' : inv.status}
+                  </span>
+                  <span class="rounded-md bg-stone-100 px-2 py-0.5 text-[11px] font-medium text-stone-600">
+                    Paso {inv.wizard_step ?? 1}/9
+                  </span>
+                </div>
+
+                <h2 class="mt-3.5 text-lg font-bold tracking-tight text-stone-900">{title}</h2>
+                <p class="mt-0.5 text-xs font-medium capitalize text-stone-500">{eventLabel}</p>
+                <p class="mt-2.5 truncate rounded-lg bg-stone-50 px-2.5 py-1 font-mono text-[11px] text-stone-500">
+                  /{inv.slug}
+                </p>
+              </div>
+
+              <div class="mt-5 flex items-center justify-between gap-2 border-t border-stone-100 pt-3.5 text-xs">
+                <span class="text-[11px] text-stone-400">
+                  {inv.updated_at ? new Date(inv.updated_at).toLocaleDateString('es-AR') : ''}
+                </span>
+
+                <div class="flex items-center gap-2">
+                  <a
+                    href={`/crear?draft=${inv.id}`}
+                    class="rounded-lg border border-stone-300 bg-white px-3 py-1.5 text-[11px] font-semibold text-stone-900 transition hover:bg-stone-50"
+                  >
+                    Editar
+                  </a>
+
+                  <button
+                    type="button"
+                    data-delete-id={inv.id}
+                    data-delete-title={title}
+                    class="delete-inv-btn cursor-pointer rounded-lg border border-red-200 bg-red-50 px-2.5 py-1.5 text-[11px] font-semibold text-red-700 transition hover:bg-red-100"
+                  >
+                    Borrar
+                  </button>
+                </div>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    )}
+  </section>
+
+  <script>
+    document.querySelectorAll('.delete-inv-btn').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const id = btn.getAttribute('data-delete-id');
+        const title = btn.getAttribute('data-delete-title') || 'esta invitación';
+        if (!id) return;
+
+        const confirmed = window.confirm(
+          `¿Seguro que querés borrar "${title}"? Esta acción no se puede deshacer.`
+        );
+        if (!confirmed) return;
+
+        btn.setAttribute('disabled', 'true');
+        btn.textContent = 'Borrando...';
+
+        try {
+          const res = await fetch(`/api/invitations/${encodeURIComponent(id)}`, {
+            method: 'DELETE',
+          });
+          const data = await res.json();
+          if (res.ok && data.ok) {
+            const card = document.querySelector(`[data-invitation-card="${id}"]`);
+            card?.remove();
+          } else {
+            alert(data.error || 'No se pudo borrar la invitación.');
+            btn.removeAttribute('disabled');
+            btn.textContent = 'Borrar';
+          }
+        } catch {
+          alert('Error de red al borrar.');
+          btn.removeAttribute('disabled');
+          btn.textContent = 'Borrar';
+        }
+      });
+    });
+  </script>
+</BaseLayout>

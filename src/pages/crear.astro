@@ -1,0 +1,67 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import EventWizard from '../components/wizard/EventWizard';
+
+const { supabase, user, isAnonymous } = Astro.locals;
+const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || '';
+const draftParam = Astro.url.searchParams.get('draft')?.trim() || '';
+
+let initialDraft = null;
+let loadDraftError = null;
+
+if (draftParam && user) {
+  const { data: found, error } = await supabase
+    .from('invitations')
+    .select('id, slug, status, event_type, event_type_other, wizard_step, data, style')
+    .eq('id', draftParam)
+    .eq('owner_id', user.id)
+    .maybeSingle();
+
+  if (error || !found) {
+    loadDraftError = 'No se encontró la invitación solicitada o no pertenece a tu sesión.';
+  } else {
+    initialDraft = found;
+  }
+}
+---
+
+<BaseLayout title="Crear invitación — NB Invitaciones">
+  <div class="mx-auto max-w-6xl px-4 py-10 sm:px-6">
+    <div class="mb-8 flex flex-col justify-between gap-2 sm:flex-row sm:items-end">
+      <div>
+        <span class="text-xs font-semibold uppercase tracking-wider text-stone-500">
+          {initialDraft ? 'Editando invitación guardada' : 'Asistente de creación'}
+        </span>
+        <h1 class="mt-1 text-2xl font-bold tracking-tight text-stone-900 sm:text-3xl">
+          {initialDraft ? 'Editá tu invitación' : 'Armá tu invitación digital'}
+        </h1>
+      </div>
+
+      <div class="text-xs text-stone-500">
+        {user && !isAnonymous ? (
+          <span class="rounded-full bg-emerald-50 px-3 py-1 font-medium text-emerald-700">
+            Sesión guardada: {user.email}
+          </span>
+        ) : (
+          <span class="rounded-full bg-stone-200/70 px-3 py-1 font-medium text-stone-700">
+            Modo invitado · Sin registro previo
+          </span>
+        )}
+      </div>
+    </div>
+
+    {loadDraftError && (
+      <div class="mb-6 rounded-xl border border-amber-300 bg-amber-50 p-4 text-xs font-medium text-amber-900">
+        {loadDraftError} Se abrió un borrador nuevo.
+      </div>
+    )}
+
+    <EventWizard
+      client:load
+      initialHasSession={Boolean(user)}
+      isAnonymous={isAnonymous}
+      turnstileSiteKey={turnstileSiteKey}
+      initialDraft={initialDraft}
+    />
+  </div>
+</BaseLayout>

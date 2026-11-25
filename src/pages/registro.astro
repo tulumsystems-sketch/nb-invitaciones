@@ -1,0 +1,107 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const { user, isAnonymous } = Astro.locals;
+const errorMessage = Astro.url.searchParams.get('error');
+const nextParam = Astro.url.searchParams.get('next');
+const safeNext = nextParam && nextParam.startsWith('/') ? nextParam : '/mis-invitaciones';
+
+// Si ya tiene cuenta registrada (no anónima), lo llevamos directo a sus invitaciones
+if (user && !isAnonymous) {
+  return Astro.redirect(safeNext);
+}
+
+const isConvertingGuest = Boolean(user && isAnonymous);
+const formAction = isConvertingGuest ? '/api/auth/convert' : '/api/auth/signup';
+---
+
+<BaseLayout
+  title={isConvertingGuest ? 'Guardar cuenta — NB Invitaciones' : 'Crear cuenta — NB Invitaciones'}
+>
+  <section class="mx-auto max-w-md px-4 py-14 sm:px-6">
+    <div class="rounded-2xl border border-stone-200 bg-white p-6 shadow-sm sm:p-8">
+      <span class="text-xs font-semibold uppercase tracking-wider text-stone-500">
+        {isConvertingGuest ? 'Guardar borrador' : 'Registro'}
+      </span>
+
+      <h1 class="mt-1 text-2xl font-bold tracking-tight text-stone-900">
+        {isConvertingGuest ? 'Creá tu cuenta para no perder tu borrador' : 'Creá tu cuenta'}
+      </h1>
+
+      <p class="mt-2 text-sm text-stone-600">
+        {isConvertingGuest
+          ? 'Tu invitación y tus cambios actuales se conservan en tu cuenta. Confirmación de email desactivada en el piloto.'
+          : 'Ingresá tu correo y contraseña para gestionar tus invitaciones.'}
+      </p>
+
+      {errorMessage && (
+        <div class="mt-4 rounded-lg border border-red-200 bg-red-50 px-3.5 py-2.5 text-xs font-medium text-red-700">
+          {errorMessage}
+        </div>
+      )}
+
+      <form method="POST" action={formAction} class="mt-6 space-y-4">
+        {isConvertingGuest && <input type="hidden" name="return_to" value={safeNext} />}
+
+        <div>
+          <label for="full_name" class="block text-xs font-medium text-stone-700">
+            Nombre y apellido
+          </label>
+          <input
+            id="full_name"
+            name="full_name"
+            type="text"
+            required
+            placeholder="Ej: Juanjo Faella"
+            class="mt-1 w-full rounded-lg border border-stone-300 px-3 py-2 text-sm text-stone-900 focus:border-stone-900 focus:outline-none"
+          />
+        </div>
+
+        <div>
+          <label for="email" class="block text-xs font-medium text-stone-700">
+            Correo electrónico
+          </label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            required
+            autocomplete="email"
+            placeholder="tu@correo.com"
+            class="mt-1 w-full rounded-lg border border-stone-300 px-3 py-2 text-sm text-stone-900 focus:border-stone-900 focus:outline-none"
+          />
+        </div>
+
+        <div>
+          <label for="password" class="block text-xs font-medium text-stone-700">
+            Contraseña (mínimo 6 caracteres)
+          </label>
+          <input
+            id="password"
+            name="password"
+            type="password"
+            required
+            minlength={6}
+            autocomplete="new-password"
+            placeholder="••••••••"
+            class="mt-1 w-full rounded-lg border border-stone-300 px-3 py-2 text-sm text-stone-900 focus:border-stone-900 focus:outline-none"
+          />
+        </div>
+
+        <button
+          type="submit"
+          class="w-full cursor-pointer rounded-xl bg-stone-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-stone-800"
+        >
+          {isConvertingGuest ? 'Guardar borrador y crear cuenta' : 'Crear cuenta'}
+        </button>
+      </form>
+
+      <div class="mt-6 border-t border-stone-100 pt-4 text-center text-xs text-stone-600">
+        ¿Ya tenés una cuenta?{' '}
+        <a href="/login" class="font-semibold text-stone-900 underline">
+          Iniciá sesión
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

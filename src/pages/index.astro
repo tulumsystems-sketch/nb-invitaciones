@@ -1,16 +1,149 @@
 ---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const { user, isAnonymous } = Astro.locals;
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<BaseLayout title="NB Invitaciones — Invitaciones digitales a tu medida" overlayHeader={true}>
+  <section class="relative overflow-hidden border-b border-stone-200/80">
+    <!-- Imagen de fondo del Hero -->
+    <img
+      src="/camila-cordeiro.jpg"
+      alt="Pareja celebrando al aire libre al atardecer"
+      class="animate-nb-scale-in absolute inset-0 h-full w-full object-cover object-[50%_38%]"
+    />
+
+    <!-- Velo oscuro degradado para integrar el menú superior y dar contraste -->
+    <div
+      aria-hidden="true"
+      class="bg-linear-to-b absolute inset-0 from-stone-950/75 via-stone-950/50 to-stone-950/80"
+    />
+
+    <div class="relative z-10 mx-auto max-w-6xl px-4 pt-28 pb-20 sm:px-6 sm:pt-36 sm:pb-28">
+      <div class="animate-nb-fade-up mx-auto max-w-3xl text-center">
+        <span class="inline-block rounded-full border border-white/25 bg-stone-950/45 px-4 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-amber-100 backdrop-blur-sm">
+          Asistente interactivo · Vista previa en vivo
+        </span>
+
+        <h1
+          style="font-family: 'Cormorant Garamond', Georgia, serif;"
+          class="mt-5 text-4xl font-bold italic leading-[1.04] tracking-tight text-white drop-shadow-xs sm:text-6xl"
+        >
+          Creá tu invitación digital sin frenos y mirala cobrar vida al instante
+        </h1>
+
+        <p class="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-stone-100/95 sm:text-base">
+          Empezá en segundos sin registrarte, cargá fotos y música, probá estilos y guardá tu borrador con tu cuenta cuando estés listo.
+        </p>
+
+        <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+          <a
+            href="/crear"
+            class="nb-card-hover rounded-2xl bg-white px-6 py-3.5 text-sm font-semibold text-stone-900 shadow-sm hover:bg-amber-50"
+          >
+            Empezar ahora
+          </a>
+
+          <a
+            href="/mis-invitaciones"
+            class="nb-card-hover rounded-2xl border border-white/35 bg-stone-950/55 px-5 py-3.5 text-sm font-semibold text-white backdrop-blur-sm hover:bg-stone-950/75"
+          >
+            {user && !isAnonymous ? 'Ver mis invitaciones' : 'Ver borradores'}
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="relative overflow-hidden bg-stone-950 text-stone-100">
+    <!-- Halo ambiental cálido sutil -->
+    <div
+      aria-hidden="true"
+      class="pointer-events-none absolute -top-24 left-1/2 h-72 w-2xl -translate-x-1/2 rounded-full bg-amber-500/10 blur-3xl"
+    />
+
+    <div class="relative z-10 mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
+      <div class="nb-reveal mx-auto max-w-2xl text-center">
+        <span class="inline-block rounded-full border border-amber-300/20 bg-amber-400/10 px-3.5 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-amber-200">
+          Cómo funciona
+        </span>
+        <h2
+          style="font-family: 'Cormorant Garamond', Georgia, serif;"
+          class="mt-3 text-3xl font-bold italic tracking-tight text-white sm:text-5xl"
+        >
+          Pensado para crear rápido y editar sin límites
+        </h2>
+        <p class="mt-2.5 text-xs leading-relaxed text-stone-400 sm:text-sm">
+          Todo el flujo está diseñado para que pruebes, ajustes y tengas tu invitación lista sin fricción.
+        </p>
+      </div>
+
+      <div class="mt-12 grid gap-5 sm:grid-cols-3">
+        <article class="nb-reveal nb-delay-1 nb-dark-card rounded-3xl border border-white/10 bg-stone-900/75 p-6 sm:p-7">
+          <div class="flex items-center justify-between">
+            <span class="font-mono text-xs font-semibold tracking-wider text-amber-300/90">
+              01 · SIN FRICCIÓN
+            </span>
+            <span class="h-2 w-2 rounded-full bg-amber-400/70" />
+          </div>
+          <h3 class="mt-4 text-lg font-bold tracking-tight text-white">
+            Probá antes de registrarte
+          </h3>
+          <p class="mt-2 text-xs leading-relaxed text-stone-300/90 sm:text-sm">
+            Completá el asistente paso a paso con sesión de invitado y convertí tu cuenta sin perder lo que armaste.
+          </p>
+        </article>
+
+        <article class="nb-reveal nb-delay-2 nb-dark-card rounded-3xl border border-white/10 bg-stone-900/75 p-6 sm:p-7">
+          <div class="flex items-center justify-between">
+            <span class="font-mono text-xs font-semibold tracking-wider text-amber-300/90">
+              02 · MULTIMEDIA
+            </span>
+            <span class="h-2 w-2 rounded-full bg-amber-400/70" />
+          </div>
+          <h3 class="mt-4 text-lg font-bold tracking-tight text-white">
+            Fotos comprimidas y música
+          </h3>
+          <p class="mt-2 text-xs leading-relaxed text-stone-300/90 sm:text-sm">
+            Portada, galería y cierre optimizados en el navegador, más biblioteca libre de derechos o enlace de YouTube.
+          </p>
+        </article>
+
+        <article class="nb-reveal nb-delay-3 nb-dark-card rounded-3xl border border-white/10 bg-stone-900/75 p-6 sm:p-7">
+          <div class="flex items-center justify-between">
+            <span class="font-mono text-xs font-semibold tracking-wider text-amber-300/90">
+              03 · CONTROL TOTAL
+            </span>
+            <span class="h-2 w-2 rounded-full bg-amber-400/70" />
+          </div>
+          <h3 class="mt-4 text-lg font-bold tracking-tight text-white">
+            Editá o borrá cuando quieras
+          </h3>
+          <p class="mt-2 text-xs leading-relaxed text-stone-300/90 sm:text-sm">
+            Volvé a abrir cualquiera de tus invitaciones guardadas para seguir ajustando textos, fotos o estilo.
+          </p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const revealEls = document.querySelectorAll('.nb-reveal');
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('is-visible');
+              observer.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.12 }
+      );
+      revealEls.forEach((el) => observer.observe(el));
+    } else {
+      revealEls.forEach((el) => el.classList.add('is-visible'));
+    }
+  </script>
+</BaseLayout>
